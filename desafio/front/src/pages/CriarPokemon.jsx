@@ -21,11 +21,6 @@ export default function CriarPokemon() {
       setTipo("");
       setTreinador("");
       
-      // Limpa o sucesso após 3 segundos
-      setTimeout(() => {
-        setSucesso(false);
-        navigate('/listar');
-      }, 2000);
     } catch (error) {
       setErro(error.response?.data?.erro || "Erro ao criar Pokémon");
     }
@@ -39,13 +34,13 @@ export default function CriarPokemon() {
       
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Tipo:</label>
+          <label>Pokémon:</label>
           <select
             value={tipo}
             onChange={(e) => setTipo(e.target.value)}
             required
           >
-            <option value="">Selecione um tipo</option>
+            <option value="">Selecione um pokémon</option>
             <option value="pikachu">Pikachu</option>
             <option value="charizard">Charizard</option>
             <option value="mewtwo">Mewtwo</option>

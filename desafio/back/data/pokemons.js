@@ -1,50 +1,48 @@
-let pokemons = [];
-let idCont = 1;
+import { connect } from '../src/db.js';
+
 
 const pokemonPermitidos = ['mewtwo', 'charizard', 'pikachu'];
 
-function criarPokemon({ tipo, treinador }) {
-    if (!pokemonPermitidos.includes(tipo.toLowerCase())) {
-        throw new Error("Tipo inválido");
-    }
+export async function criarPokemon({ tipo, treinador }) {
+  if (!pokemonPermitidos.includes(tipo.toLowerCase())) {
+    throw new Error("Tipo inválido");
+  }
 
-    const novo = {
-        id: idCont++,
-        tipo: tipo.toLowerCase(),
-        treinador,
-        nivel: 1
-    };
+  const db = await connect();
+  const result = await db.run(
+    'INSERT INTO pokemons (tipo, treinador, nivel) VALUES (?, ?, 1)',
+    [tipo.toLowerCase(), treinador]
+  );
 
-    pokemons.push(novo);
-    return novo;
+  return {
+    id: result.lastID,
+    tipo: tipo.toLowerCase(),
+    treinador,
+    nivel: 1
+  };
 }
 
-function alterarTrainer(id, treinador) {
-    const pokemon = pokemons.find(p => p.id == id);
-    if (!pokemon) return false;
-    pokemon.treinador = treinador;
-    return true;
+export async function alterarTrainer(id, treinador) {
+  const db = await connect();
+  const result = await db.run(
+    'UPDATE pokemons SET treinador = ? WHERE id = ?',
+    [treinador, id]
+  );
+  return result.changes > 0;
 }
 
-function deletarPoke(id) {
-    const index = pokemons.findIndex(p => p.id == id);
-    if (index === -1) return false;
-    pokemons.splice(index, 1);
-    return true;
+export async function deletarPoke(id) {
+  const db = await connect();
+  const result = await db.run('DELETE FROM pokemons WHERE id = ?', [id]);
+  return result.changes > 0;
 }
 
-function carregarpoke(id) {
-    return pokemons.find(p => p.id == id);
+export async function carregarpoke(id) {
+  const db = await connect();
+  return db.get('SELECT * FROM pokemons WHERE id = ?', [id]);
 }
 
-function listarpoke() {
-    return pokemons;
+export async function listarpoke() {
+  const db = await connect();
+  return db.all('SELECT * FROM pokemons');
 }
-
-export default {
-    criarPokemon,  // Fixed the name here
-    alterarTrainer,
-    deletarPoke,
-    carregarpoke,
-    listarpoke
-};

@@ -6,7 +6,7 @@ export default function Home() {
 
   return (
     <div className="home-container">
-      <h1>Pokémon CRUD</h1>
+      <h1>PokéMint</h1>
       <div className="button-grid">
         <button className="btn-primary" onClick={() => navigate('/criar')}>
           Criar Pokémon

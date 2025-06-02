@@ -1,35 +1,39 @@
 import express from 'express';
-import pokemon from './data/pokemons.js';
-import cors from 'cors'
+import * as pokemon from './data/pokemons.js'; // novo caminho
+import cors from 'cors';
+import { initDb } from './src/initdb.js';
 
 const app = express();
+await initDb(); // inicializa o banco
 app.use(express.json());
-app.use(cors())
+app.use(cors());
 
-// Rota POST para criar Pokémon
-app.post('/pokemons', (req, res) => {
+// POST - Criar Pokémon
+app.post('/pokemons', async (req, res) => {
     try {
-        const novo = pokemon.criarPokemon(req.body);
+        const novo = await pokemon.criarPokemon(req.body);
         res.status(200).json(novo);
     } catch (err) {
         res.status(400).json({ erro: err.message });
     }
 });
 
-app.put('/pokemons/:id', (req, res) => {
+// PUT - Alterar treinador
+app.put('/pokemons/:id', async (req, res) => {
     const id = parseInt(req.params.id);
-    const sucesso = pokemon.alterarTrainer(id, req.body.treinador);
+    const sucesso = await pokemon.alterarTrainer(id, req.body.treinador);
     if (sucesso) {
         res.sendStatus(204);
-        console.log("treinador alterado com sucesso")
+        console.log("Treinador alterado com sucesso");
     } else {
         res.sendStatus(404);
     }
 });
 
-app.delete('/pokemons/:id', (req, res) => {
+// DELETE - Deletar Pokémon
+app.delete('/pokemons/:id', async (req, res) => {
     const id = parseInt(req.params.id);
-    const sucesso = pokemon.deletarPoke(id);
+    const sucesso = await pokemon.deletarPoke(id);
     if (sucesso) {
         res.sendStatus(204);
     } else {
@@ -37,21 +41,23 @@ app.delete('/pokemons/:id', (req, res) => {
     }
 });
 
-app.get('/pokemons/:id', (req, res) => {
+// GET - Buscar um Pokémon específico
+app.get('/pokemons/:id', async (req, res) => {
     const id = parseInt(req.params.id);
-    const pokemon = pokemon.carregarpoke(id);
-    if (pokemon) {
-        res.status(200).json(pokemon);
+    const resultado = await pokemon.carregarpoke(id);
+    if (resultado) {
+        res.status(200).json(resultado);
     } else {
         res.sendStatus(404);
     }
 });
 
-
-// Rota GET para listar Pokémons
-app.get('/pokemons', (req, res) => {
-    res.status(200).json(pokemon.listarpoke());
+// GET - Listar todos os Pokémons
+app.get('/pokemons', async (req, res) => {
+    const lista = await pokemon.listarpoke();
+    res.status(200).json(lista);
 });
+
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);

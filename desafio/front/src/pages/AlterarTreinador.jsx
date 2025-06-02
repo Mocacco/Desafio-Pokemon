@@ -35,7 +35,6 @@ export default function AlterarTreinador() {
     if (id) carregarPokemon();
   }, [id]);
 
-  // ... restante do código ...
 
   if (!pokemon && !carregando) {
     return (
