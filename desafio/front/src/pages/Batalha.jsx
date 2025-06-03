@@ -34,9 +34,11 @@ export default function Batalha() {
     }
   }
 
-  // Busca os dados do Pokémon selecionado no array pokemons
+
   const pokemon1 = pokemons.find(p => p.id === Number(pokemonAId));
   const pokemon2 = pokemons.find(p => p.id === Number(pokemonBId));
+  const vencedor = pokemons.find(p => p.id === resultado?.vencedorId);
+
 
   return (
     <div className="batalha-container">
@@ -88,12 +90,22 @@ export default function Batalha() {
         )}
       </div>
 
-      {resultado && <div className="pokemon-box">
-        <h3>Pokémon vencedor</h3>
-            <p><strong>ID:</strong> {pokemon2.id}</p>
-            <p><strong>Tipo:</strong> {pokemon2.tipo}</p>
-            <p><strong>Treinador:</strong> {pokemon2.treinador}</p>
-            <p><strong>Nível:</strong> {pokemon2.nivel}</p></div>}
+     {resultado && (
+  <div className="resultado-batalha">
+
+    {resultado.vencedor ? (
+      <div className="pokemon-box vencedor">
+        <h3>Vencedor</h3>
+        <p><strong>ID:</strong> {resultado.vencedor.id}</p>
+        <p><strong>Tipo:</strong> {resultado.vencedor.tipo}</p>
+        <p><strong>Treinador:</strong> {resultado.vencedor.treinador}</p>
+        <p><strong>Nível:</strong> {resultado.vencedor.nivel}</p>
+      </div>
+    ) : (
+      <p>Erro a batalha não pode ocorrer novamente pois um dos pokémons morreu</p>
+    )}
+  </div>
+)}
       {erro && <div className="erro-batalha">{erro}</div>}
     </div>
   );
