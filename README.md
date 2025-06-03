@@ -49,3 +49,10 @@ abra um segundo terminal no VScode e execute os comandos
     "npm run dev"
   }
   ```
+
+- **4º:** `abrir o front end`
+ ```json
+  {
+    "use a tecla Ctrl + clique direito no link http://localhost:3000 para abrir a aplicação e testa-la"
+  }
+  ```
