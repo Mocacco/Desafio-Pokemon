@@ -1,4 +1,3 @@
-// src/components/Navbar.js
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -10,6 +9,7 @@ export default function Navbar() {
         <div className="nav-links">
           <Link to="/criar">Criar</Link>
           <Link to="/listar">Listar</Link>
+          <Link to="/batalha">Batalha</Link>
         </div>
       </div>
     </nav>

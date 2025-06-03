@@ -6,6 +6,7 @@ import CriarPokemon from './pages/CriarPokemon';
 import Listar from './pages/ListarPokemons';
 import DeletarPokemon from './pages/DeletarPokemon';
 import AlterarTreinador from './pages/AlterarTreinador';
+import Batalha from  './pages/Batalha'
 import Navbar from './components/Navbar';
 import './App.css';
 
@@ -20,6 +21,7 @@ function App() {
           <Route path="/listar" element={<Listar />} />
           <Route path="/deletar/:id" element={<DeletarPokemon />} />
           <Route path="/alterar/:id" element={<AlterarTreinador />} />
+          <Route path="/batalha" element={<Batalha />} />
         </Routes>
       </div>
     </div>

@@ -14,6 +14,9 @@ export default function Home() {
         <button className="btn-primary" onClick={() => navigate('/listar')}>
           Listar Pokémons
         </button>
+        <button className="btn-primary" onClick={() => navigate('/batalha')}>
+          Batalhar
+        </button>
       </div>
     </div>
   );

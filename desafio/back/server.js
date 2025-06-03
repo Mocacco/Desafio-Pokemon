@@ -18,6 +18,48 @@ app.post('/pokemons', async (req, res) => {
     }
 });
 
+app.post('/batalhar/:pokemonAId/:pokemonBId', async (req, res) => {
+    try {
+        const idA = parseInt(req.params.pokemonAId);
+        const idB = parseInt(req.params.pokemonBId);
+
+        const pokeA = await pokemon.carregarpoke(idA);
+        const pokeB = await pokemon.carregarpoke(idB);
+
+        if (!pokeA || !pokeB) {
+            return res.status(404).json({ erro: "Um dos pokémons não foi encontrado" });
+        }
+
+        const totalNivel = pokeA.nivel + pokeB.nivel;
+        const chanceA = pokeA.nivel / totalNivel;
+
+        const vencedor = Math.random() < chanceA ? pokeA : pokeB;
+        const perdedor = vencedor.id === pokeA.id ? pokeB : pokeA;
+
+        vencedor.nivel += 1;
+        await pokemon.atualizarNivel(vencedor.id, vencedor.nivel);
+
+        let perdedorFinal = { ...perdedor };
+        perdedor.nivel -= 1;
+
+        if (perdedor.nivel <= 0) {
+            await pokemon.deletarPoke(perdedor.id);
+            perdedorFinal.nivel = 0;
+        } else {
+            await pokemon.atualizarNivel(perdedor.id, perdedor.nivel);
+            perdedorFinal.nivel = perdedor.nivel;
+        }
+
+        res.status(200).json({
+            vencedor,
+            perdedor: perdedorFinal
+        });
+    } catch (err) {
+        console.error("Erro na batalha:", err); // <-- Mostra o erro no terminal
+        res.status(500).json({ erro: "Erro interno na batalha" });
+    }
+});
+
 // PUT - Alterar treinador
 app.put('/pokemons/:id', async (req, res) => {
     const id = parseInt(req.params.id);
@@ -62,3 +104,5 @@ const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
 });
+
+

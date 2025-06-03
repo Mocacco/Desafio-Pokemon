@@ -46,3 +46,9 @@ export async function listarpoke() {
   const db = await connect();
   return db.all('SELECT * FROM pokemons');
 }
+
+
+export async function atualizarNivel(id, novoNivel) {
+  const db = await connect();
+  await db.run('UPDATE pokemons SET nivel = ? WHERE id = ?', [novoNivel, id]);
+}
