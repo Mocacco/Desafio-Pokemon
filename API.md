@@ -30,13 +30,13 @@ Esta API permite a criação e gerenciamento de pokémons, alem de permitir bata
 - **Resposta (JSON):**
 
   ```json
- {
+  {
   "id": "number",
   "tipo": "string",
   "treinador": "string",
   "nivel": "number"
- }
+  }
   ```
 
-
+#### post /pokemons
 
