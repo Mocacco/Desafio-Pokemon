@@ -12,7 +12,6 @@ Esta API permite a criação e gerenciamento de pokémons, alem de permitir bata
 
 ## Endpoints
 
-### 1.Criar Pokémon
 ### **1. Registrar Pokemon**
 
 - **Método:** `POST`
