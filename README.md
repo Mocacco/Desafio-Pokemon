@@ -52,4 +52,4 @@ abra um segundo terminal no VScode e execute os comandos
 
   ### **3. Abrir a Aplicação**
 
-Use a tecla Ctrl + clique direito no link http://localhost:3000 que sera gerado no segundo terminal que está abertor o server Vite do frontend para abrir a aplicação e testa-la
+Use a tecla Ctrl + clique direito no link http://localhost:3000 que sera gerado no segundo terminal que está aberto o server Vite do frontend para abrir a aplicação e testa-la
