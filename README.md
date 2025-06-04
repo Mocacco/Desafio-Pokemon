@@ -84,3 +84,30 @@ abra um terceiro terminal no VScode e execute os comandos
  Abra o Cypress escolha a opção e2e para testes clique em continuar, 
  apos isso selecione o navegador que deseja fazer os testes,
  vá na aba de specs e execute cada um dos scripts de teste.
+
+---  
+
+
+# Teste Unitario
+
+---
+
+## Execução do teste
+
+para executar o código siga os comandos a seguir
+
+### **1. Execução**
+abra um quarto terminal no VScode e execute os comandos
+
+- **1º:** `entrar na pasta que contem os dados do frontend`
+ ```json
+  {
+    "cd desafio/front"
+  }
+  ```
+- **2º:** `executar o comando para fazer todos os testes`
+ ```json
+  {
+    "npm test"
+  }
+  ```
