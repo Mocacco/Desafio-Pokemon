@@ -10,6 +10,7 @@ export default function Navbar() {
           <Link to="/criar">Criar</Link>
           <Link to="/listar">Listar</Link>
           <Link to="/batalha">Batalha</Link>
+          <Link to="/buscar">Buscar</Link>
         </div>
       </div>
     </nav>

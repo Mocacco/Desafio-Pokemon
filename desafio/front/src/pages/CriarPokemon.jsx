@@ -28,7 +28,7 @@ export default function CriarPokemon() {
 
   return (
     <div className="form-container">
-      <h2>Criar Pokémon</h2>
+      <h2>Criar Pokémons</h2>
       {sucesso && <div className="success-message">Pokémon criado com sucesso!</div>}
       {erro && <div className="error-message">{erro}</div>}
       

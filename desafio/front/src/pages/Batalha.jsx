@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import api from '../services/api'; 
 
 export default function Batalha() {
   const [pokemons, setPokemons] = useState([]);
@@ -6,42 +7,56 @@ export default function Batalha() {
   const [pokemonBId, setPokemonBId] = useState('');
   const [resultado, setResultado] = useState(null);
   const [erro, setErro] = useState('');
+  const [carregando, setCarregando] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:3000/pokemons')
-      .then(res => res.json())
-      .then(setPokemons)
-      .catch(() => setErro('Erro ao carregar pokémons.'));
+    const carregarPokemons = async () => {
+      try {
+        const response = await api.get('/pokemons');
+        setPokemons(response.data);
+      } catch (error) {
+        setErro('Erro ao carregar pokémons.');
+      }
+    };
+    carregarPokemons();
   }, []);
 
   async function batalhar() {
-    if (pokemonAId === pokemonBId) {
-      setErro('Selecione pokémons diferentes!');
-      setResultado(null);
-      return;
-    }
-
-    try {
-      const res = await fetch(`http://localhost:3000/batalhar/${pokemonAId}/${pokemonBId}`, {
-        method: 'POST',
-      });
-      const data = await res.json();
-      setResultado(data);
-      setErro('');
-    } catch (err) {
-      setErro('Erro na batalha.');
-      setResultado(null);
-    }
+  if (!pokemonAId || !pokemonBId) {
+    setErro('Selecione ambos os pokémons!');
+    return;
   }
+
+  if (pokemonAId === pokemonBId) {
+    setErro('Selecione pokémons diferentes!');
+    setResultado(null);
+    return;
+  }
+
+  setCarregando(true);
+  setErro('');
+
+   try {
+    const response = await api.post(`/batalhar/${pokemonAId}/${pokemonBId}`);
+    setResultado(response.data);
+
+    const updatedPokemons = await api.get('/pokemons');
+    setPokemons(updatedPokemons.data.filter(p => p.nivel > 0));
+
+  } catch (error) {
+    setErro(error.response?.data?.erro || 'Erro na batalha.');
+    setResultado(null);
+  } finally {
+    setCarregando(false);
+  }
+}
 
 
   const pokemon1 = pokemons.find(p => p.id === Number(pokemonAId));
   const pokemon2 = pokemons.find(p => p.id === Number(pokemonBId));
-  const vencedor = pokemons.find(p => p.id === resultado?.vencedorId);
-
 
   return (
-    <div className="batalha-container">
+    <div className="batalha-container" data-cy="batalha-page">
       <h2>⚔️ Batalha Pokémon</h2>
 
       <div className="form-group">
@@ -50,6 +65,7 @@ export default function Batalha() {
           type="number"
           value={pokemonAId}
           onChange={e => setPokemonAId(e.target.value)}
+          data-cy="select-pokemon1"
         />
       </div>
 
@@ -59,16 +75,25 @@ export default function Batalha() {
           type="number"
           value={pokemonBId}
           onChange={e => setPokemonBId(e.target.value)}
+          data-cy="select-pokemon2"
         />
       </div>
 
       <div className="batalha-actions">
-        <button onClick={batalhar}>Iniciar Batalha</button>
+        <button 
+          onClick={batalhar}
+          disabled={carregando}
+          data-cy="iniciar-batalha"
+        >
+          {carregando ? 'Batalhando...' : 'Iniciar Batalha'}
+        </button>
       </div>
+
+      {erro && <div className="erro-batalha" data-cy="erro-mensagem">{erro}</div>}
 
       <div className="pokemons-batalha">
         {pokemon1 && (
-          <div className="pokemon-box">
+          <div className="pokemon-box" data-cy="pokemon-1">
             <h3>Pokémon 1</h3>
             <p><strong>ID:</strong> {pokemon1.id}</p>
             <p><strong>Tipo:</strong> {pokemon1.tipo}</p>
@@ -80,7 +105,7 @@ export default function Batalha() {
         <div className="vs-text">VS</div>
 
         {pokemon2 && (
-          <div className="pokemon-box">
+          <div className="pokemon-box" data-cy="pokemon-2">
             <h3>Pokémon 2</h3>
             <p><strong>ID:</strong> {pokemon2.id}</p>
             <p><strong>Tipo:</strong> {pokemon2.tipo}</p>
@@ -90,23 +115,34 @@ export default function Batalha() {
         )}
       </div>
 
-     {resultado && (
-  <div className="resultado-batalha">
-
-    {resultado.vencedor ? (
-      <div className="pokemon-box vencedor">
-        <h3>Vencedor</h3>
-        <p><strong>ID:</strong> {resultado.vencedor.id}</p>
-        <p><strong>Tipo:</strong> {resultado.vencedor.tipo}</p>
-        <p><strong>Treinador:</strong> {resultado.vencedor.treinador}</p>
-        <p><strong>Nível:</strong> {resultado.vencedor.nivel}</p>
-      </div>
-    ) : (
-      <p>Erro a batalha não pode ocorrer novamente pois um dos pokémons morreu</p>
-    )}
-  </div>
-)}
-      {erro && <div className="erro-batalha">{erro}</div>}
+      {resultado && (
+        <div className="resultado-batalha" data-cy="resultado-batalha">
+          {resultado.vencedor ? (
+            <>
+              <div className="pokemon-box vencedor" data-cy="vencedor">
+                <h3>Vencedor</h3>
+                <p><strong>ID:</strong> {resultado.vencedor.id}</p>
+                <p><strong>Tipo:</strong> {resultado.vencedor.tipo}</p>
+                <p><strong>Treinador:</strong> {resultado.vencedor.treinador}</p>
+                <p><strong>Nível:</strong> {resultado.vencedor.nivel}</p>
+              </div>
+              
+              <div className="pokemon-box perdedor" data-cy="perdedor">
+                <h3>Perdedor</h3>
+                <p><strong>ID:</strong> {resultado.perdedor.id}</p>
+                <p><strong>Tipo:</strong> {resultado.perdedor.tipo}</p>
+                <p><strong>Treinador:</strong> {resultado.perdedor.treinador}</p>
+                <p><strong>Nível:</strong> {resultado.perdedor.nivel}</p>
+                {resultado.perdedor.nivel <= 0 && (
+                  <p className="eliminado">ELIMINADO</p>
+                )}
+              </div>
+            </>
+          ) : (
+            <p>Erro: a batalha não pode ser concluída</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -9,6 +9,7 @@ import AlterarTreinador from './pages/AlterarTreinador';
 import Batalha from  './pages/Batalha'
 import Navbar from './components/Navbar';
 import './App.css';
+import BuscarPokemon from './pages/BuscarPokemon';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/deletar/:id" element={<DeletarPokemon />} />
           <Route path="/alterar/:id" element={<AlterarTreinador />} />
           <Route path="/batalha" element={<Batalha />} />
+          <Route path="/buscar" element={<BuscarPokemon />} />
         </Routes>
       </div>
     </div>
