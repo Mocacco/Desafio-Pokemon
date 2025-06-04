@@ -1,70 +1,68 @@
-// src/pages/CriarPokemon.js
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import api from "../services/api";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../services/api';  // Alterado para usar o api mockado
 
-export default function CriarPokemon() {
-  const [tipo, setTipo] = useState("");
-  const [treinador, setTreinador] = useState("");
-  const [erro, setErro] = useState("");
-  const [sucesso, setSucesso] = useState(false);
+const CriarPokemon = () => {
+  const [tipo, setTipo] = useState('');
+  const [treinador, setTreinador] = useState('');
+  const [mensagem, setMensagem] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErro("");
-    setSucesso(false);
-    
+    setMensagem('');
+
     try {
-      const res = await api.post("/pokemons", { tipo, treinador });
-      setSucesso(true);
-      setTipo("");
-      setTreinador("");
-      
+      const response = await api.post('/pokemons', { tipo, treinador });
+      setMensagem(`Pokémon criado com sucesso! ID: ${response.data.id}`);
+      setTipo('');
+      setTreinador('');
     } catch (error) {
-      setErro(error.response?.data?.erro || "Erro ao criar Pokémon");
+      if (error.response && error.response.data && error.response.data.message) {
+        setMensagem(`Erro: ${error.response.data.message}`);
+      } else {
+        setMensagem('Erro ao criar Pokémon. Tente novamente.');
+      }
     }
   };
 
   return (
     <div className="form-container">
       <h2>Criar Pokémons</h2>
-      {sucesso && <div className="success-message">Pokémon criado com sucesso!</div>}
-      {erro && <div className="error-message">{erro}</div>}
-      
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label>Pokémon:</label>
-          <select
-            value={tipo}
-            onChange={(e) => setTipo(e.target.value)}
-            required
-          >
+          <label htmlFor="pokemon">Pokémon:</label>
+          <select id="pokemon" value={tipo} onChange={e => setTipo(e.target.value)} required>
             <option value="">Selecione um pokémon</option>
             <option value="pikachu">Pikachu</option>
             <option value="charizard">Charizard</option>
             <option value="mewtwo">Mewtwo</option>
           </select>
         </div>
-        
+
         <div className="form-group">
-          <label>Treinador:</label>
+          <label htmlFor="treinador">Treinador:</label>
           <input
+            id="treinador"
             type="text"
             placeholder="Nome do treinador"
             value={treinador}
-            onChange={(e) => setTreinador(e.target.value)}
+            onChange={e => setTreinador(e.target.value)}
             required
           />
         </div>
-        
+
         <div className="form-actions">
           <button type="submit">Criar Pokémon</button>
           <button type="button" className="btn-secondary" onClick={() => navigate('/')}>
             Voltar
           </button>
         </div>
+
+        {mensagem && <p>{mensagem}</p>}
       </form>
     </div>
   );
-}
+};
+
+export default CriarPokemon;

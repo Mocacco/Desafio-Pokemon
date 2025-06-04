@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import api from '../services/api'; 
+import React, { useState, useEffect } from 'react';
+import api from '../services/api';
 
 export default function Batalha() {
   const [pokemons, setPokemons] = useState([]);
@@ -21,35 +21,43 @@ export default function Batalha() {
     carregarPokemons();
   }, []);
 
-  async function batalhar() {
-  if (!pokemonAId || !pokemonBId) {
-    setErro('Selecione ambos os pokémons!');
-    return;
-  }
-
-  if (pokemonAId === pokemonBId) {
-    setErro('Selecione pokémons diferentes!');
+  const batalhar = async () => {
+    // Clear previous results and errors before new battle attempt
     setResultado(null);
-    return;
-  }
+    setErro('');
 
-  setCarregando(true);
-  setErro('');
+    if (!pokemonAId || !pokemonBId) {
+      setErro('Selecione ambos os pokémons!');
+      return;
+    }
 
-   try {
-    const response = await api.post(`/batalhar/${pokemonAId}/${pokemonBId}`);
-    setResultado(response.data);
+    if (pokemonAId === pokemonBId) {
+      setErro('Selecione pokémons diferentes!');
+      return;
+    }
 
-    const updatedPokemons = await api.get('/pokemons');
-    setPokemons(updatedPokemons.data.filter(p => p.nivel > 0));
+    setCarregando(true);
 
-  } catch (error) {
-    setErro(error.response?.data?.erro || 'Erro na batalha.');
-    setResultado(null);
-  } finally {
-    setCarregando(false);
-  }
-}
+    try {
+      const response = await api.post(`/batalhar/${pokemonAId}/${pokemonBId}`);
+      setResultado(response.data);
+
+      // Refresh pokemons after battle to reflect level changes/elimination
+      // This part also needs to be robust if the get fails
+      try {
+        const updatedPokemonsResponse = await api.get('/pokemons');
+        setPokemons(updatedPokemonsResponse.data.filter(p => p.nivel > 0)); // Filter out eliminated pokemons
+      } catch (fetchError) {
+        console.error('Erro ao atualizar lista de pokémons após batalha:', fetchError);
+        // Optionally, you might want to show a message about this specific error
+      }
+
+    } catch (error) {
+      setErro(error.response?.data?.erro || 'Erro na batalha.');
+    } finally {
+      setCarregando(false);
+    }
+  };
 
 
   const pokemon1 = pokemons.find(p => p.id === Number(pokemonAId));
@@ -60,8 +68,9 @@ export default function Batalha() {
       <h2>⚔️ Batalha Pokémon</h2>
 
       <div className="form-group">
-        <label>ID do Pokémon 1</label>
+        <label htmlFor="pokemon1-id">ID do Pokémon 1</label> {/* Added htmlFor */}
         <input
+          id="pokemon1-id" // Added id
           type="number"
           value={pokemonAId}
           onChange={e => setPokemonAId(e.target.value)}
@@ -70,8 +79,9 @@ export default function Batalha() {
       </div>
 
       <div className="form-group">
-        <label>ID do Pokémon 2</label>
+        <label htmlFor="pokemon2-id">ID do Pokémon 2</label> {/* Added htmlFor */}
         <input
+          id="pokemon2-id" // Added id
           type="number"
           value={pokemonBId}
           onChange={e => setPokemonBId(e.target.value)}
@@ -80,7 +90,7 @@ export default function Batalha() {
       </div>
 
       <div className="batalha-actions">
-        <button 
+        <button
           onClick={batalhar}
           disabled={carregando}
           data-cy="iniciar-batalha"
@@ -126,7 +136,7 @@ export default function Batalha() {
                 <p><strong>Treinador:</strong> {resultado.vencedor.treinador}</p>
                 <p><strong>Nível:</strong> {resultado.vencedor.nivel}</p>
               </div>
-              
+
               <div className="pokemon-box perdedor" data-cy="perdedor">
                 <h3>Perdedor</h3>
                 <p><strong>ID:</strong> {resultado.perdedor.id}</p>
